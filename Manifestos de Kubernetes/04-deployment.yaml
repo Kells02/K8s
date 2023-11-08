@@ -1,0 +1,50 @@
+# Creamos un Deployment
+# Un Deployment es un Template para crear Pods
+# Al ser un Deployment con 2 réplicas, si se nos elimina una, Kubernetes creará de nuevo la que falta.
+
+apiVersion: apps/v1 # Versión de la API de este recurso de Kubernetes
+kind: Deployment # Tipo de recurso
+metadata:
+  name: nginx-deployment # Nombre del Deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2 # Cantidad de Pods que queremos en nuestro Deployment
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers: # Declaramos el contenedor que vamos a utilizar
+      - name: nginx
+        image: nginx:alpine
+        env: # Variables de entorno
+        - name: MI_VARIABLE
+          value: "cristian"
+        - name: MI_OTRA_VARIABLE
+          value: "fernández"
+        - name: DD_AGENT_HOST # Extraer la IP del Host donde va correr el Pod
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+          requests: # Request són los recursos que vamos a garantizar a este Pod que siempre va tener disponible.
+            memory: "64Mi"
+            cpu: "200m"
+          limits: # El limite que este Pod puede llegar a usar.
+            memory: "128Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        ports: # Decimos el puerto que va utilizar el contenedor, ya que estámos utilizando Nginx (Mostrar la página web).
+        - containerPort: 80

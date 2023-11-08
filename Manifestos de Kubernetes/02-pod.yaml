@@ -1,0 +1,39 @@
+# Creación de un Pod con más opciones
+
+apiVersion: v1 # Versión de la API de este recurso de Kubernetes
+kind: Pod # Tipo de recurso
+metadata:
+  name: nginx # Nombre del Pod
+spec:
+  containers: # Declaramos el contenedor que vamos a utilizar
+  - name: nginx
+    image: nginx:alpine
+    env: # Variables de entorno
+    - name: MI_VARIABLE # Primera variable
+      value: "cristian"
+    - name: MI_OTRA_VARIABLE # Segunda variable
+      value: "fernández"
+    - name: DD_AGENT_HOST # Creamos esta variable de entorno para que tome el valor 
+      valueFrom:          # de la API de Kubernetes, extraiga la IP del Host donde va correr este Pod.
+        fieldRef:
+          fieldPath: status.hostIP
+    resources: # Es una forma de asignar recursos a nuetros contenedores.
+      requests: # Request són los recursos que vamos a garantizar a este Pod que siempre va tener disponible.
+        memory: "64Mi"
+        cpu: "200m"
+      limits: # El limite que este Pod puede llegar a usar.
+        memory: "128Mi"
+        cpu: "500m"
+    readinessProbe: # Es una forma de explicarle a Kubernetes que el Pod esta listo para recibir tráfico.
+      httpGet: # Kubernetes hace un request a la ruta "/" para verificar si e contenedor esta listo para recibir tráfico.
+        path: /
+        port: 80
+      initialDelaySeconds: 5 # Indica que se hará la verificación después de 5 segundos desde que el contenedor se inicia.
+      periodSeconds: 10 # Establecemos un intervalo de 10 segundos entre cada verificación.
+    livenessProbe: # Es una forma de explciarle a Kubernetes que el Pod esta vivo. No quiero que lo mate.
+      tcpSocket:
+        port: 80 # Kubernetes mira si el puerto 80 está abierto
+      initialDelaySeconds: 15 # Indica que se hará la verificación después de 15 segundos desde que el contenedor se inicia.
+      periodSeconds: 20 # Establecemos un intervalo de 20 segundos entre cada verificación.
+    ports: # Decimos el puerto que va utilizar el contenedor, ya que estámos utilizando Nginx (Mostrar la página web).
+    - containerPort: 80

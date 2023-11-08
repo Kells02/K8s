@@ -1,0 +1,10 @@
+# Creación de un Pod Básico
+
+apiVersion: v1 # Versión de la API de este recurso de Kubernetes
+kind: Pod # Tipo de recurso
+metadata:
+  name: nginx # Nombre del Pod
+spec:
+  containers: # Declaramos el contenedor que vamos a utilizar
+  - name: nginx
+    image: nginx:alpine
