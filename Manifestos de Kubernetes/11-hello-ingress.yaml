@@ -1,0 +1,27 @@
+# Creamos un recurso Ingress
+# Ingress nos permite crear accesos a nuestros servicios pasados en el Path
+# Es un Controlador que dirige el tráfico basado en rutas. Cuando utilizamos Ingress se nos crea un Load Balancer que es por donde vamos a poder comunicarnos al exterior.
+# Ej: Tengo 3 nodos y en esos nodos tengo 3 replicas de "/v1" y "/v2", si en mi Nginx pongo la IP del Load Balancer y el Path "/v1", solo llegaré a los Pods del Nodo "/v1"
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress # Recurso tipo Ingress
+metadata:
+  name: hello-app
+spec:
+  rules:
+  - http: # Para solicitudes HTTP
+      paths:
+      - path: /v1 # Creamos el Path "/v1"
+        pathType: Prefix
+        backend:
+          service: # Definimos el servicio que va a coger. Este servicio ya debe estar creado previamente.
+            name: hello-v1
+            port:
+              number: 8080
+      - path: /v2 # Creamos el Path "/v2"
+        pathType: Prefix
+        backend:
+          service:
+            name: hello-v2
+            port:
+              number: 8080 # Escucha por el puerto 8080

@@ -1,0 +1,33 @@
+# Definimos un Deployment junto un Clúster IP
+
+apiVersion: apps/v1
+kind: Deployment # Tipo de recurso
+metadata:
+  name: hello # Nombre del recurso
+spec:
+  replicas: 3 # Especificamos que va tener 3 réplicas
+  selector:
+    matchLabels:
+      role: hello # Selecciona los Pods que tengan la etiqueta "role:hello"
+  template:
+    metadata:
+      labels:
+        role: hello # Define la plantilla para los Pods creadas por el Deployment. Los Pods tendrán la etiqueta "role:hello"
+    spec:
+      containers: # Especificamos que la plantilla del Pod contendrá un contenedor llamado "hello" con una imagen de una App de Google
+      - name: hello
+        image: gcr.io/google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080 # El contenedor escuchará por el puerto 8080
+
+---
+apiVersion: v1
+kind: Service # Definimos un servicio tipo "Clúster IP" llamado "hello"
+metadata:
+  name: hello
+spec:
+  ports: # El servicio escuhará en el puerto 8080 y redirigirá el tráfico a Pods que estén escuchando en el puerto 8080
+  - port: 8080
+    targetPort: 8080
+  selector: # Especificamos que redirigirá el tráfico a los Pods con la etiqueta "role:hello"
+    role: hello

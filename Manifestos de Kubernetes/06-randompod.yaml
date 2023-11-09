@@ -1,0 +1,13 @@
+# Definimos un Pod
+
+apiVersion: v1 # Versión de la API de este recurso de Kubernetes
+kind: Pod # Tipo de recurso
+metadata:
+  name: ubuntu # Nombre del Pod
+spec:
+  containers: # Contenedores que se ejecutarán en el Pod
+  - name: ubuntu
+    image: ubuntu # Indicamos la imagen que va correr el contenedor
+    args: # Comandos que se ejecutarán dentro del contenedor
+    - sleep
+    - infinity # El contenedor estará en estado de suspensión indefinidamente
